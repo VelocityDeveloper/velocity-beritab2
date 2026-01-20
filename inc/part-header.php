@@ -78,7 +78,7 @@
 <div class="container my-3 d-block d-md-none">
 	<nav id="responsive-nav" class="navbar navbar-expand-md d-block navbar-dark py-0 bg-color-theme" aria-labelledby="main-nav-label">
 
-		<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#responsivenavbar" aria-controls="responsivenavbar" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'justg'); ?>">
+		<button class="navbar-toggler py-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#responsivenavbar" aria-controls="responsivenavbar" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'justg'); ?>">
 			<span class="navbar-toggler-icon"></span>
 			<small>Menu</small>
 		</button>
