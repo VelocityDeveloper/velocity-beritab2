@@ -171,8 +171,8 @@ function velocity_berita_customize_register($wp_customize) {
 
 
 ///add action builder part
-add_action('justg_before_header', 'wpberita_top_header');
-function wpberita_top_header()
+add_action('justg_before_header', 'velocity_beritab2_top_header');
+function velocity_beritab2_top_header()
 {
 	require_once(get_stylesheet_directory() . '/inc/part-top-header.php');
 }
