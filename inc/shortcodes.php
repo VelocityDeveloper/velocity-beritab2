@@ -32,9 +32,10 @@ function velocity_post_tabs() {
         <div class="tab-pane fade show active" id="kategori1" role="tabpanel" aria-labelledby="kategori1-tab">
         <?php 
         $args = array(
-            'post_type' => 'post',
-            'orderby' => 'comment_count',
-            'order' => 'DESC',
+            'post_type'   => 'post',
+            'meta_key'    => 'hit',
+            'orderby'     => 'meta_value_num',
+            'order'       => 'DESC',
             'numberposts' => $jumlah,
         );
         $posts = get_posts($args);
@@ -130,7 +131,8 @@ function velocity_popular_posts(){
     ob_start();
     $args = array(
         'post_type'   => 'post',
-        'orderby'     => 'comment_count',
+        'meta_key'    => 'hit',
+        'orderby'     => 'meta_value_num',
         'order'       => 'DESC',
         'numberposts' => 10 // Batas maksimal post yang diambil
     );
@@ -141,7 +143,7 @@ function velocity_popular_posts(){
             setup_postdata( $post ); ?>
             <div class="velocity-popular-list mb-3">
                 <div class="fw-bold mb-0"><a class="text-dark" href="<?php echo get_permalink($post->ID); ?>"><b><?php echo get_the_title($post->ID); ?></b></a></div>
-                <small class="text-secondary fst-italic"><?php velocity_post_date($post->ID); ?></small>
+                <small class="text-secondary fst-italic"><?php velocity_post_date($post->ID); ?>  |  <?php echo get_post_meta($post->ID, 'hit', true); ?> dilihat</small>
             </div>
         <?php }
         echo '</div>';
