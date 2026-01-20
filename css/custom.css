@@ -165,7 +165,7 @@ body,
 }
 
 .btn-twitter {
-  background-color: #1c96e9 !important;
+  background-color: #000000 !important;
 }
 
 .btn-instagram {
@@ -244,7 +244,7 @@ body,
 
 /* Share icons */
 .s-twitter {
-  color: #00aced !important;
+  color: #000000 !important;
 }
 
 .s-facebook {
@@ -577,4 +577,10 @@ body,
 
 .slick-arrow.slick-hidden {
   display: none;
+}
+
+.social-circle {
+	width: 32px;
+	height: 32px;
+	padding: 0;
 }

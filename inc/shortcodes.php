@@ -5,84 +5,11 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
-//[velocity-excerpt count="150" post_id=""]
-add_shortcode('velocity-excerpt', 'vd_getexcerpt');
-function vd_getexcerpt($atts){
-    ob_start();
-	global $post;
-    $atribut = shortcode_atts( array(
-        'count'	=> '150', /// count character
-        'post_id'   => $post->ID,
-    ), $atts );
-    $post_id        = $atribut['post_id'];
-
-    $count		= $atribut['count'];
-    $excerpt	= get_the_excerpt($post_id);
-    $excerpt 	= strip_tags($excerpt);
-    $excerpt 	= substr($excerpt, 0, $count);
-    $excerpt 	= substr($excerpt, 0, strripos($excerpt, " "));
-    $excerpt 	= ''.$excerpt.'...';
-
-    echo $excerpt;
-
-	return ob_get_clean();
-}
-
-// [vd-breadcrumbs]
-add_shortcode('vd-breadcrumbs','vd_breadcrumbs');
-function vd_breadcrumbs() {
-    ob_start();
-    echo justg_breadcrumb();
-    return ob_get_clean();
-}
-
-//[ratio-thumbnail size="medium" ratio="16:9"]
-add_shortcode('ratio-thumbnail', 'ratio_thumbnail');
-function ratio_thumbnail($atts) {
-    ob_start();
-	global $post;
-
-    $atribut = shortcode_atts( array(
-        'size'      => 'medium', // thumbnail, medium, large, full
-        'ratio'     => '16:9', // 16:9, 8:5, 4:3, 3:2, 1:1
-    ), $atts );
-
-    $size       = $atribut['size'];
-    $ratio      = $atribut['ratio'];
-	$ratio_pair = explode(':', $ratio);
-	$ratio_width = isset($ratio_pair[0]) ? absint($ratio_pair[0]) : 16;
-	$ratio_height = isset($ratio_pair[1]) ? absint($ratio_pair[1]) : 9;
-	if ($ratio_width < 1) {
-		$ratio_width = 16;
-	}
-	if ($ratio_height < 1) {
-		$ratio_height = 9;
-	}
-	$ratio_style = velocity_berita_ratio_style($ratio_width, $ratio_height);
-	$urlimg     = get_the_post_thumbnail_url($post->ID, $size);
-	if (!$urlimg) {
-		$urlimg = velocity_berita_no_image_url();
-	}
-
-    echo '<a class="d-block text-decoration-none" href="'.get_the_permalink($post->ID).'" title="'.esc_attr(get_the_title($post->ID)).'">';
-        echo '<div class="ratio" style="--bs-aspect-ratio: '.$ratio_style.';">';
-            echo '<img src="'.esc_url($urlimg).'" loading="lazy" class="w-100 h-100 object-fit-cover" alt="'.esc_attr(get_the_title($post->ID)).'"/>';
-        echo '</div>';
-    echo '</a>';
-
-	return ob_get_clean();
-}
-
-
-
 
 // [velocity-post-tabs]
 function velocity_post_tabs() {
     ob_start();
-    $jumlah = 3;
-    $calendar_icon = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-calendar3 align-middle me-1" viewBox="0 0 16 16">
-    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 4.5h14V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4.5zM2 3.5V2a1 1 0 0 1 1-1h1v2.5H2zm3-2.5h6v2.5H5V1zm7 0h1a1 1 0 0 1 1 1v1.5h-2V1z"/>
-    </svg>'; ?>
+    $jumlah = 3; ?>
 
     <ul class="nav nav-tabs velocity-post-tabs row p-0" role="tablist">
         <li class="nav-item pb-0 border-0 col p-0 text-center">
@@ -112,21 +39,10 @@ function velocity_post_tabs() {
         );
         $posts = get_posts($args);
         if ($posts): ?>
-            <div class="frame-kategori">
+            <div class="frame-kategori px-3">
             <?php foreach ($posts as $post):
                 setup_postdata($post);
-                echo '<div class="row m-0 py-2">';
-                echo '<div class="col-4 col-sm-3 p-0">';
-                echo velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
-                echo '</div>';
-                echo '<div class="col-8 col-sm-9 py-1">';
-                $vtitle = get_the_title($post->ID);
-                echo '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="'.get_the_permalink($post->ID).'">'.substr($vtitle, 0, 60) . ' ...'.'</a></div>';
-                echo '<div class="text-muted"><small>'.$calendar_icon;
-                velocity_post_date($post->ID);
-                echo '</small></div>';
-                echo '</div>';
-                echo '</div>';
+                echo velocity_post_tabs_item($post);
             endforeach; ?>
             </div>
         <?php else:
@@ -144,21 +60,10 @@ function velocity_post_tabs() {
         );
         $posts2 = get_posts($args2);
         if ($posts2): ?>
-            <div class="frame-kategori">
+            <div class="frame-kategori px-3">
             <?php foreach ($posts2 as $post):
                 setup_postdata($post);
-                echo '<div class="row m-0 py-2">';
-                echo '<div class="col-4 col-sm-3 p-0">';
-                echo velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
-                echo '</div>';
-                echo '<div class="col-8 col-sm-9 py-1">';
-                $vtitle = get_the_title($post->ID);
-                echo '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="'.get_the_permalink($post->ID).'">'.substr($vtitle, 0, 60) . ' ...'.'</a></div>';
-                echo '<div class="text-muted"><small>'.$calendar_icon;
-                velocity_post_date($post->ID);
-                echo '</small></div>';
-                echo '</div>';
-                echo '</div>';
+                echo velocity_post_tabs_item($post);
             endforeach; ?>
             </div>
         <?php else:
@@ -178,21 +83,10 @@ function velocity_post_tabs() {
         );
         $posts3 = get_posts($args3);
         if ($posts3): ?>
-            <div class="frame-kategori">
+            <div class="frame-kategori px-3">
             <?php foreach ($posts3 as $post):
                 setup_postdata($post);
-                echo '<div class="row m-0 py-2">';
-                echo '<div class="col-4 col-sm-3 p-0">';
-                echo velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
-                echo '</div>';
-                echo '<div class="col-8 col-sm-9 py-1">';
-                $vtitle = get_the_title($post->ID);
-                echo '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="'.get_the_permalink($post->ID).'">'.substr($vtitle, 0, 60) . ' ...'.'</a></div>';
-                echo '<div class="text-muted"><small>'.$calendar_icon;
-                velocity_post_date($post->ID);
-                echo '</small></div>';
-                echo '</div>';
-                echo '</div>';
+                echo velocity_post_tabs_item($post);
             endforeach; ?>
             </div>
         <?php else:
@@ -206,6 +100,28 @@ function velocity_post_tabs() {
     return ob_get_clean();
 }
 add_shortcode('velocity-post-tabs', 'velocity_post_tabs');
+
+function velocity_post_tabs_item($post) {
+	$title = get_the_title($post->ID);
+	$trimmed_title = substr($title, 0, 60) . ' ...';
+	$calendar_icon = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-calendar3 align-middle me-1" viewBox="0 0 16 16">
+	<path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 4.5h14V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4.5zM2 3.5V2a1 1 0 0 1 1-1h1v2.5H2zm3-2.5h6v2.5H5V1zm7 0h1a1 1 0 0 1 1 1v1.5h-2V1z"/>
+	</svg>';
+	$html = '<div class="row m-0 py-2">';
+	$html .= '<div class="col-4 col-sm-3 p-0">';
+	$html .= velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
+	$html .= '</div>';
+	$html .= '<div class="col-8 col-sm-9 py-1">';
+	$html .= '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="' . get_the_permalink($post->ID) . '">' . $trimmed_title . '</a></div>';
+	$html .= '<div class="text-muted"><small>' . $calendar_icon;
+	ob_start();
+	velocity_post_date($post->ID);
+	$date = ob_get_clean();
+	$html .= $date . '</small></div>';
+	$html .= '</div>';
+	$html .= '</div>';
+	return $html;
+}
 
 
 

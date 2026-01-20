@@ -49,7 +49,7 @@ get_header();
                             echo '</span>';
                         echo '</small>';
                         echo '<div class="fs-5 mb-2"><a class="secondary-font fw-bold text-dark" href="'.get_the_permalink($post_id).'">'.get_the_title($post_id).'</a></div>';
-                        echo do_shortcode('[velocity-excerpt count="150" post_id="'.$post_id.'"]');
+                        echo velocity_berita_excerpt($post_id, 150);
                     }
                     echo '</div>';
                     echo '<div class="col-md-5">';
