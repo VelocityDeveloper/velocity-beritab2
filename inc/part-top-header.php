@@ -11,9 +11,10 @@
                             'showposts' => 5,
                             'post_type' => array('post'),
                         ));
-                        foreach($headerposts as $post) {
-                            echo '<a class="text-white d-inline-block me-4 pe-2" href="'.get_the_permalink($post->ID).'">'.get_the_title($post->ID).'</a>';
-                        } ?>
+                        foreach ($headerposts as $header_post) {
+                            echo '<a class="text-white d-inline-block me-4 pe-2" href="' . get_the_permalink($header_post->ID) . '">' . get_the_title($header_post->ID) . '</a>';
+                        }
+                        wp_reset_postdata(); ?>
                     </div>
 				</div>
 			</div>
@@ -29,7 +30,7 @@
                 <small><?php echo velocity_date(); ?></small>
             </div>
             <div class="col-7 col-sm-4 text-md-end px-0">
-                <form method="get" name="searchform" action="<?php echo get_home_url();?>">
+                <form method="get" name="searchform" action="<?php echo esc_url(get_home_url()); ?>">
                     <div class="row">
                         <div class="col-9 col-md-10 pe-0">
                             <input type="text" name="s" class="form-control form-control-sm" placeholder="Search" value="<?php echo esc_attr(get_search_query()); ?>" required />
