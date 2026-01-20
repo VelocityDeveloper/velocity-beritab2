@@ -32,7 +32,7 @@
                 <form method="get" name="searchform" action="<?php echo get_home_url();?>">
                     <div class="row">
                         <div class="col-9 col-md-10 pe-0">
-                            <input type="text" name="s" class="form-control form-control-sm" placeholder="Search" required />
+                            <input type="text" name="s" class="form-control form-control-sm" placeholder="Search" value="<?php echo esc_attr(get_search_query()); ?>" required />
                         </div>
                         <div class="col-3 col-md-2 ps-1">
                             <button type="submit" class="h-100 w-100 btn btn-primary btn-sm bg-color-theme border-0">
