@@ -81,7 +81,7 @@ get_header();
                     echo '<div class="row mb-3">';
                         while($wpex_query->have_posts()): $wpex_query->the_post(); ?>
                         <div class="col-md-4 col-sm-6 mb-3">
-                            <?php echo do_shortcode('[resize-thumbnail width="300" height="200" linked="true" class="w-100 mb-2"]'); ?>
+                            <?php echo velocity_berita_thumbnail_html(get_the_ID(), 300, 200, 'w-100 mb-2'); ?>
                             <a class="text-dark" href="<?php echo get_the_permalink($post->ID); ?>"><b><?php echo get_the_title($post->ID); ?></b></a>
                         </div>
                     <?php endwhile;

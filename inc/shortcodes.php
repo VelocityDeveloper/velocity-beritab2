@@ -5,74 +5,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
-//[resize-thumbnail width="300" height="150" linked="true" class="w-100"]
-add_shortcode('resize-thumbnail', 'resize_thumbnail');
-function resize_thumbnail($atts) {
-    ob_start();
-	global $post;
-    $atribut = shortcode_atts( array(
-        'output'	=> 'image', /// image or url
-        'width'    	=> '300', ///width image
-        'height'    => '150', ///height image
-        'crop'      => 'false',
-        'upscale'   => 'true',
-        'linked'   	=> 'true', ///return link to post	
-        'class'   	=> 'w-100', ///return class name to img	
-        'attachment' => 'true',
-        'post_id'   => $post->ID,
-    ), $atts );
-
-    $output			= $atribut['output'];
-    $attach         = $atribut['attachment'];
-    $width          = $atribut['width'];
-    $height         = $atribut['height'];
-    $crop           = $atribut['crop'];
-    $upscale        = $atribut['upscale'];
-    $linked        	= $atribut['linked'];
-    $post_id        = $atribut['post_id'];
-    $class        	= $atribut['class']?'class="'.$atribut['class'].'"':'';
-	$urlimg			= get_the_post_thumbnail_url($post_id,'full');
-	
-	if(empty($urlimg) && $attach == 'true'){
-          $attachments = get_posts( array(
-            'post_type' 		=> 'attachment',
-            'posts_per_page' 	=> 1,
-            'post_parent' 		=> $post_id,
-        	'orderby'          => 'date',
-        	'order'            => 'DESC',
-          ) );
-          if ( $attachments ) {
-				$urlimg = wp_get_attachment_url( $attachments[0]->ID, 'full' );
-          }
-    }
-
-	if($urlimg):
-		$urlresize      = aq_resize( $urlimg, $width, $height, $crop, true, $upscale );
-		if($output=='image'):
-			if($linked=='true'):
-				echo '<a href="'.get_the_permalink($post_id).'" title="'.get_the_title($post_id).'">';
-			endif;
-			echo '<img src="'.$urlresize.'" width="'.$width.'" height="'.$height.'" loading="lazy" '.$class.'>';
-			if($linked=='true'):
-				echo '</a>';
-			endif;
-		else:
-			echo $urlresize;
-		endif;
-
-	else:
-		if($linked=='true'):
-			echo '<a href="'.get_the_permalink($post_id).'" title="'.get_the_title($post_id).'">';
-		endif;
-		echo '<svg style="background-color: #ececec;width: 100%;height: auto;" width="'.$width.'" height="'.$height.'"></svg>';
-		if($linked=='true'):
-			echo '</a>';
-		endif;
-	endif;
-
-	return ob_get_clean();
-}
-
 //[velocity-excerpt count="150" post_id=""]
 add_shortcode('velocity-excerpt', 'vd_getexcerpt');
 function vd_getexcerpt($atts){
@@ -117,16 +49,26 @@ function ratio_thumbnail($atts) {
 
     $size       = $atribut['size'];
     $ratio      = $atribut['ratio'];
-    $ratio      = $ratio?str_replace(":","-",$ratio):'';
-	$urlimg     = get_the_post_thumbnail_url($post->ID,$size);
+	$ratio_pair = explode(':', $ratio);
+	$ratio_width = isset($ratio_pair[0]) ? absint($ratio_pair[0]) : 16;
+	$ratio_height = isset($ratio_pair[1]) ? absint($ratio_pair[1]) : 9;
+	if ($ratio_width < 1) {
+		$ratio_width = 16;
+	}
+	if ($ratio_height < 1) {
+		$ratio_height = 9;
+	}
+	$ratio_style = velocity_berita_ratio_style($ratio_width, $ratio_height);
+	$urlimg     = get_the_post_thumbnail_url($post->ID, $size);
+	if (!$urlimg) {
+		$urlimg = velocity_berita_no_image_url();
+	}
 
-    echo '<div class="ratio-thumbnail">';
-        echo '<a class="ratio-thumbnail-link" href="'.get_the_permalink($post->ID).'" title="'.get_the_title($post->ID).'">';
-            echo '<div class="ratio-thumbnail-box ratio-thumbnail-'.$ratio.'" style="background-image: url('.$urlimg.');">';
-                echo '<img src="'.$urlimg.'" loading="lazy" class="ratio-thumbnail-image"/>';
-            echo '</div>';
-        echo '</a>';
-    echo '</div>';
+    echo '<a class="d-block text-decoration-none" href="'.get_the_permalink($post->ID).'" title="'.esc_attr(get_the_title($post->ID)).'">';
+        echo '<div class="ratio" style="--bs-aspect-ratio: '.$ratio_style.';">';
+            echo '<img src="'.esc_url($urlimg).'" loading="lazy" class="w-100 h-100 object-fit-cover" alt="'.esc_attr(get_the_title($post->ID)).'"/>';
+        echo '</div>';
+    echo '</a>';
 
 	return ob_get_clean();
 }
@@ -137,7 +79,10 @@ function ratio_thumbnail($atts) {
 // [velocity-post-tabs]
 function velocity_post_tabs() {
     ob_start();
-    $jumlah = 3; ?>
+    $jumlah = 3;
+    $calendar_icon = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-calendar3 align-middle me-1" viewBox="0 0 16 16">
+    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 4.5h14V14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4.5zM2 3.5V2a1 1 0 0 1 1-1h1v2.5H2zm3-2.5h6v2.5H5V1zm7 0h1a1 1 0 0 1 1 1v1.5h-2V1z"/>
+    </svg>'; ?>
 
     <ul class="nav nav-tabs velocity-post-tabs row p-0" role="tablist">
         <li class="nav-item pb-0 border-0 col p-0 text-center">
@@ -154,15 +99,14 @@ function velocity_post_tabs() {
         </li>
     </ul>
     
-    <div class="tab-content py-2 border-left border-right border-bottom" id="myTabContent">
+    <div class="tab-content py-2 border-start border-end border-bottom" id="myTabContent">
 
         <!-- Tab Popular -->
         <div class="tab-pane fade show active" id="kategori1" role="tabpanel" aria-labelledby="kategori1-tab">
         <?php 
         $args = array(
             'post_type' => 'post',
-            'meta_key' => 'hit',
-            'orderby' => 'meta_value_num',
+            'orderby' => 'comment_count',
             'order' => 'DESC',
             'numberposts' => $jumlah,
         );
@@ -173,18 +117,14 @@ function velocity_post_tabs() {
                 setup_postdata($post);
                 echo '<div class="row m-0 py-2">';
                 echo '<div class="col-4 col-sm-3 p-0">';
-                if (has_post_thumbnail($post->ID)) {
-                    echo '<a href="'.get_the_permalink($post->ID).'">';
-                    echo velocity_thumbnail('200','200','false','true','w-100 img-fluid',$post->ID);
-                    echo '</a>';
-                }
+                echo velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
                 echo '</div>';
                 echo '<div class="col-8 col-sm-9 py-1">';
                 $vtitle = get_the_title($post->ID);
                 echo '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="'.get_the_permalink($post->ID).'">'.substr($vtitle, 0, 60) . ' ...'.'</a></div>';
-                echo '<div class="text-muted"><small><i class="fa fa-calendar" aria-hidden="true"></i> ';
+                echo '<div class="text-muted"><small>'.$calendar_icon;
                 velocity_post_date($post->ID);
-                echo ' / <i class="fa fa-eye" aria-hidden="true"></i> '.get_post_meta($post->ID,'hit',true).'</small></div>';
+                echo '</small></div>';
                 echo '</div>';
                 echo '</div>';
             endforeach; ?>
@@ -209,18 +149,14 @@ function velocity_post_tabs() {
                 setup_postdata($post);
                 echo '<div class="row m-0 py-2">';
                 echo '<div class="col-4 col-sm-3 p-0">';
-                if (has_post_thumbnail($post->ID)) {
-                    echo '<a href="'.get_the_permalink($post->ID).'">';
-                    echo velocity_thumbnail('200','200','false','true','w-100 img-fluid',$post->ID);
-                    echo '</a>';
-                }
+                echo velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
                 echo '</div>';
                 echo '<div class="col-8 col-sm-9 py-1">';
                 $vtitle = get_the_title($post->ID);
                 echo '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="'.get_the_permalink($post->ID).'">'.substr($vtitle, 0, 60) . ' ...'.'</a></div>';
-                echo '<div class="text-muted"><small><i class="fa fa-calendar" aria-hidden="true"></i> ';
+                echo '<div class="text-muted"><small>'.$calendar_icon;
                 velocity_post_date($post->ID);
-                echo ' / <i class="fa fa-eye" aria-hidden="true"></i> '.get_post_meta($post->ID,'hit',true).'</small></div>';
+                echo '</small></div>';
                 echo '</div>';
                 echo '</div>';
             endforeach; ?>
@@ -247,18 +183,14 @@ function velocity_post_tabs() {
                 setup_postdata($post);
                 echo '<div class="row m-0 py-2">';
                 echo '<div class="col-4 col-sm-3 p-0">';
-                if (has_post_thumbnail($post->ID)) {
-                    echo '<a href="'.get_the_permalink($post->ID).'">';
-                    echo velocity_thumbnail('200','200','false','true','w-100 img-fluid',$post->ID);
-                    echo '</a>';
-                }
+                echo velocity_berita_thumbnail_html($post->ID, 200, 200, 'w-100');
                 echo '</div>';
                 echo '<div class="col-8 col-sm-9 py-1">';
                 $vtitle = get_the_title($post->ID);
                 echo '<div class="vtitle"><a class="text-dark secondary-font fw-bold" href="'.get_the_permalink($post->ID).'">'.substr($vtitle, 0, 60) . ' ...'.'</a></div>';
-                echo '<div class="text-muted"><small><i class="fa fa-calendar" aria-hidden="true"></i> ';
+                echo '<div class="text-muted"><small>'.$calendar_icon;
                 velocity_post_date($post->ID);
-                echo ' / <i class="fa fa-eye" aria-hidden="true"></i> '.get_post_meta($post->ID,'hit',true).'</small></div>';
+                echo '</small></div>';
                 echo '</div>';
                 echo '</div>';
             endforeach; ?>
@@ -282,8 +214,7 @@ function velocity_popular_posts(){
     ob_start();
     $args = array(
         'post_type'   => 'post',
-        'meta_key'    => 'hit',
-        'orderby'     => 'meta_value_num',
+        'orderby'     => 'comment_count',
         'order'       => 'DESC',
         'numberposts' => 10 // Batas maksimal post yang diambil
     );
@@ -294,7 +225,7 @@ function velocity_popular_posts(){
             setup_postdata( $post ); ?>
             <div class="velocity-popular-list mb-3">
                 <div class="fw-bold mb-0"><a class="text-dark" href="<?php echo get_permalink($post->ID); ?>"><b><?php echo get_the_title($post->ID); ?></b></a></div>
-                <small class="text-secondary fst-italic"><?php velocity_post_date($post->ID); ?>  |  <?php echo get_post_meta($post->ID, 'hit', true); ?> dilihat</small>
+                <small class="text-secondary fst-italic"><?php velocity_post_date($post->ID); ?></small>
             </div>
         <?php }
         echo '</div>';
@@ -342,7 +273,7 @@ function velocity_recent_posts($atts){
             } ?>
             <div class="velocity-recent-list<?php echo $colframe;?>">
                 <div class="col-image<?php echo $class;?>">
-                    <?php echo do_shortcode('[resize-thumbnail width="400" height="280" linked="true" class="w-100" post_id="'.$post->ID.'"]');?>
+                    <?php echo velocity_berita_thumbnail_html($post->ID, 400, 280, 'w-100'); ?>
                 </div>
                 <div class="col-content<?php echo $col2;?>">
                     <div class="v-post-title fw-bold mb-0"><a class="text-dark" href="<?php echo get_permalink($post->ID); ?>"><b><?php echo get_the_title($post->ID); ?></b></a></div>

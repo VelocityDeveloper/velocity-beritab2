@@ -4,7 +4,7 @@
 			<div class="col-md-2 px-0 align-items-center d-md-flex d-none">
 				<div class="text-center color-theme bg-white col-12 py-1 px-0 rounded fw-bold">Breaking News</div>
 			</div>
-			<div class="col-md-10 pr-0 text-left align-items-center d-flex">
+			<div class="col-md-10 pe-0 text-start align-items-center d-flex">
 				<div class="vertical-post-header velocity-marquee">
                     <div class="velocity-marquee-content">
                         <?php $headerposts = get_posts(array(

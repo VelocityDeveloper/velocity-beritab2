@@ -41,7 +41,7 @@ get_header();
                     echo '<div class="col-md-7 mb-3 mb-md-0 text-muted">';
                     foreach(array_slice($top_posts, 0,1) as $post) {
                         $post_id = $post->ID;
-                        echo do_shortcode('[resize-thumbnail width="410" height="280" linked="true" class="w-100" post_id="'.$post_id.'"]');
+                        echo velocity_berita_thumbnail_html($post_id, 410, 280, 'w-100');
                         echo '<small class="d-block mt-2 mb-1">';
                             velocity_post_categories($post->ID);
                             echo '<span class="fst-italic ms-2">';
@@ -57,7 +57,7 @@ get_header();
                         foreach(array_slice($top_posts, 1,3) as $post) {                        
                             echo '<div class="col-6 col-md-12 mb-md-3 mb-0">';
                                 echo '<div class="velocity-post-thumbnail mb-2">';
-                                    echo do_shortcode('[resize-thumbnail width="300" height="180" linked="true" class="w-100"]');
+                                    echo velocity_berita_thumbnail_html($post->ID, 300, 180, 'w-100');
                                 echo '</div>';
                                 echo '<div class="velocity-post-title">';
                                     echo '<a class="secondary-font fw-bold text-dark" href="'.get_the_permalink().'">'.get_the_title().'</a>';
